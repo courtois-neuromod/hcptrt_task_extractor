@@ -1,83 +1,80 @@
 {
   "TTL": "SyncSlide.OnsetTime",
   "ioi": [{
-    "name": "Procedure",
-    "value": "TrialsPROC"}],
-  "descriptions": [
+    "column": "Procedure",
+    "value": "TrialsPROC"}
+  ],
+  "events":[
     {
-      "name": "ExperimenterWindow.OnsetDelay",
-      "type": "time",
-      "new_name": "expwindow_onset_delay"
+      "name": "new_bloc",
+      "ioi": [
+        {
+        "column": "Procedure",
+        "value": ["ShapePromptPROC","FacePromptPROC", "TrialsPROC"]}
+      ],
+      "onset": {
+        "column": ["shape.OnsetTime", "face.OnsetTime"],
+        "type": "time"
+      },
+      "duration": {
+        "column": "StimSlide.OnsetTime-onset",
+        "type": ""
+      },
+      "nbloc": {
+        "column": "HRun1",
+        "type":
     },
     {
-      "name": "ExperimenterWindow.OnsetTime",
-      "type": "time",
-      "new_name": "expwindow_onset_time"
+      "name": "response",
+      "ioi": [
+        {
+        "column": "Procedure",
+        "value": "TrialsPROC"
+        }],
+      "onset": {
+        "column": ["shape.OnsetTime", "face.OnsetTime"],
+        "type": "time"
+      },
+      "duration": {
+        "column": "StimSlide.OnsetTime-onset",
+        "type": ""
+      },
+      "nbloc": {
+        "column": "HRun1",
+        "type": ""
+      },
+      "ntrial": {
+        "column": ["ShapeBlock1", "ShapeBlock1", "ShapeBlock1", "ShapeBlock1"],
+        "type":
+      },
+      "stim_top": {
+        "column": "Top",
+        "type": "stim"
+      },
+      "stim_left": {
+        "column": "Left",
+        "type": "stim"
+      },
+      "stim_right": {
+        "column": "Right",
+        "type": "stim"
+      }
     },
     {
-      "name": "Stim.OnsetTime",
-      "type": "rt",
-      "new_name": "stim_onset_time"
-    },
-    {
-      "name": "Stim.OnsetDelay",
-      "type": "time",
-      "new_name": "stim_onset_delay"
-    },
-    {
-      "name": "Stim.RT",
-      "type": "time",
-      "new_name": "response_time"
-    },
-    {
-      "name": "RunTrialNumber",
-      "type": "var",
-      "new_name": "trial"
-    },
-    {
-      "name": "Procedure",
-      "type": "var",
-      "new_name": "procedure"
-    },
-    {
-      "name": "Stimulus",
-      "type": "var",
-      "new_name": "stimulus"
-    },
-    {
-      "name": "TargetType",
-      "type": "var",
-      "new_name": "target_type"
-    },
-    {
-      "name": "CorrectResponse",
-      "type": "var",
-      "new_name": "correct_response"
-    },
-    {
-      "name": "StimType",
-      "type": "var",
-      "new_name": "stim_type"
-    },
-    {
-      "name": "BlockType",
-      "type": "var",
-      "new_name": "block_type"
-    },
-    {
-      "name": "Top",
-      "type": "stimuli",
-      "new_name": "top_stimuli"
-    },
-    {
-      "name": "Left",
-      "type": "stimuli",
-      "new_name": "left_stimuli"
-    },
-    {
-      "name": "Right",
-      "type": "stimuli",
-      "new_name": "right_stimuli"
+      "name": "fixation",
+      "ioi": {},
+      "onset": {
+        "column": "Fixation.OnsetTime",
+        "type": "time",
+      },
+      "duration":{
+        "column": "StimSlide.OnsetTime-Fixation.OnsetTime",
+        "type": "rt"
+      },
+      "nbloc": {
+        "column": "HRun1",
+        "type": "int"
+      },
     }
   ]
 }
