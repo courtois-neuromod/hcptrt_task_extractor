@@ -18,11 +18,11 @@
       },
       "duration": {
         "column": "StimSlide.OnsetTime-onset",
-        "type": ""
+        "type": "rt"
       },
       "nbloc": {
         "column": "HRun1",
-        "type":
+        "type": "int"
     },
     {
       "name": "response",
@@ -37,15 +37,15 @@
       },
       "duration": {
         "column": "StimSlide.OnsetTime-onset",
-        "type": ""
+        "type": "rt"
       },
       "nbloc": {
         "column": "HRun1",
-        "type": ""
+        "type": "int"
       },
       "ntrial": {
         "column": ["ShapeBlock1", "ShapeBlock1", "ShapeBlock1", "ShapeBlock1"],
-        "type":
+        "type": "int"
       },
       "stim_top": {
         "column": "Top",
