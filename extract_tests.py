@@ -61,30 +61,32 @@ def assert_task_df(df_columns, json_dict):
     Returns
     -------
     """
+
+    allColumns = []
+
     for curr_event in json_dict["events"]:
         for curr_key in curr_event:
             if "column" in curr_key:
-                used_columns = [curr_key["column"]]
                 if isinstance(curr_key["column"], list):
-                    used_columns = curr_key["column"]
+                    allColumns = allColumns + curr_key["column"]
+                else:
+                    allColumns.append(curr_key["column"])
 
-                for curr_column in used_columns:
-                    if not set([curr_column]).issubset(df.columns):
-                        logging.error("{} does not exist into df".format(curr_column))
             if isinstance(curr_key, list):
                 for listKey in curr_key:
-                    used_columns = [curr_key["column"]]
                     if isinstance(curr_key["column"], list):
-                        used_columns = curr_key["column"]
+                        allColumns = allColumns + curr_key["column"]
+                    else:
+                        allColumns.append(curr_key["column"])
 
-                    for curr_column in used_columns:
-                        if not set([curr_column]).issubset(df.columns):
-                            logging.error("{} does not exist into df".format(curr_column))
+    for curr_column in allColumns:
+        if not set([curr_column]).issubset(df.columns):
+            logging.error("{} does not exist into df".format(curr_column))
 
 
 def get_ioi(df, ioi_dict):
     """
-    Get Index of Interest from task['ioi'] list of dict.
+    Get Index of Interest from event dict.
 
     Parameters
     ----------
@@ -118,7 +120,7 @@ def get_ioi(df, ioi_dict):
 
 def get_onsets(df, onset_dict):
     """
-    Get Index of Interest from task['ioi'] list of dict.
+    Get onsets from event dict.
 
     Parameters
     ----------
@@ -130,36 +132,29 @@ def get_onsets(df, onset_dict):
 
     Returns
     -------
-    new_df: pandas.core.series.Series
+    onset_serie: pandas.core.series.Series
         Series of Index with onsets.
     """
 
     if 'value' in onset_dict:
         if onset_dict['value'] == 'merge' and isinstance(onset_dict['column'],
                                                          list):
-            new_df = merge_columns(df, onset_dict['column'])
+            onset_serie = merge_columns(df, onset_dict['column'])
         elif isinstance(onset_dict['column'], list):
             logging.error('Use case {} not coded'.format(onset_dict['value']))
         else:
             logging.error('If you want to merge you need at least two columns')
     else:
-        new_df = merge_columns(df, [onset_dict['column']])
+        onset_serie = merge_columns(df, [onset_dict['column']])
 
-    new_df = new_df.rename('onset')
-    return new_df
+    onset_serie = onset_serie.rename('onset')
 
-
-def merge_columns(df, listColumns):
-    new_df = pd.Series([])
-    for curr_column in listColumns:
-        new_df = new_df.combine_first(df[curr_column])
-
-    return new_df
+    return onset_serie
 
 
 def get_durations(df, onset, duration_dict):
     """
-    Get Index of Interest from task['ioi'] list of dict.
+    Get durations from event dict.
 
     Parameters
     ----------
@@ -171,51 +166,95 @@ def get_durations(df, onset, duration_dict):
 
     Returns
     -------
-    new_df: pandas.core.series.Series
-        Series of Index with onsets.
+    duration_serie: pandas.core.series.Series
+        Series of Index with durations.
     """
     if 'formula' in duration_dict:
         curr_formula = duration_dict['formula']
         if len(curr_formula) == 3:
-            new_df = df[duration_dict['column']]
-            new_df = new_df.shift(periods=curr_formula[0])
+            duration_serie = df[duration_dict['column']]
+            duration_serie = duration_serie.shift(periods=curr_formula[0])
             if curr_formula[1] == 'subtract':
-                new_df = new_df.astype(np.float) - onset.astype(np.float)
+                duration_serie = duration_serie.astype(np.float) - onset.astype(np.float)
             elif curr_formula[1] == 'add':
-                new_df = new_df.astype(np.float) + onset.astype(np.float)
+                duration_serie = duration_serie.astype(np.float) + onset.astype(np.float)
         else:
             logging.error('This is not coded yet')
     elif isinstance(duration_dict['column'], str):
-        new_df = df[duration_dict['column']]
+        duration_serie = df[duration_dict['column']]
 
-    new_df = new_df.rename('duration')
-    return new_df
+    duration_serie = duration_serie.rename('duration')
+    return duration_serie
+
+
+def merge_columns(df, listColumns):
+    """
+    Merge column inot Get Index of Interest from task['ioi'] list of dict.
+
+    Parameters
+    ----------
+    df : pandas DataFrame
+        Current DataFrame.
+
+    listColumns : list
+        List of column names to merge. You should not have overlap between
+        these columns.
+
+    Returns
+    -------
+    new_serie: pandas.core.series.Series
+        Merge serie.
+    """
+    new_serie = pd.Series([])
+    for curr_column in listColumns:
+        new_serie = new_serie.combine_first(df[curr_column])
+
+    return new_serie
 
 
 def get_key(df, columnName, key_dict):
+    """
+    Get Key from event dict.
+
+    Parameters
+    ----------
+    df : pandas DataFrame
+        Current DataFrame.
+
+    columnName: str
+        Rename column with this name.
+
+    key_dict : dict
+        Dict to select rows or compute duration.
+
+    Returns
+    -------
+    key_serie: pandas.core.DataFrame
+        Series from specific key.
+    """
+
     if isinstance(key_dict['column'], str):
-        curr_df = df[key_dict['column']]
+        key_serie = df[key_dict['column']]
         if key_dict['type'] == 'stim':
-            curr_df = '../../stimulis/' + curr_df
+            key_serie = '../../stimulis/' + key_serie
         elif columnName == "nbloc":
-            curr_df = curr_df.astype(np.float)-np.floor(curr_df.astype(np.float)/2)
+            key_serie = key_serie.astype(np.float) - \
+                            np.floor(key_serie.astype(np.float)/2)
+
     elif isinstance(key_dict['column'], list):
         if key_dict['value'] == 'merge':
-            curr_df = merge_columns(df, key_dict['column'])
+            key_serie = merge_columns(df, key_dict['column'])
         else:
             logging.error('not coded yet')
     else:
         logging.error('not coded yet')
 
-    curr_df = curr_df.rename(columnName)
-    return curr_df
+    key_serie = key_serie.rename(columnName)
+
+    return key_serie
 
 
-def get_TTL(df, column):
-    return float(df.loc[0, column])
-
-
-def extract_specific(df, curr_event, new_df, ttl):
+def extract_event(df, curr_event, new_df, ttl):
 
     #  Get usefull indexes: ioi -> index of interest
     ioi = get_ioi(df, curr_event['ioi'])
@@ -245,7 +284,7 @@ def extract_specific(df, curr_event, new_df, ttl):
     durations = durations[ioi]
 
     # Cast into np.float and divide by 1000
-    onsets = onsets.astype(np.float).apply(_subTTL, var=ttl).apply(_divide)
+    onsets = onsets.astype(np.float).apply(_subTTL, var=ttl)
     durations = durations.astype(np.float).apply(_divide)
 
     # Join all df into one
@@ -256,6 +295,10 @@ def extract_specific(df, curr_event, new_df, ttl):
     new_df = pd.concat([new_df, curr_event_df])
 
     return new_df
+
+
+def get_TTL(df, column):
+    return float(df.loc[0, column])
 
 
 def _divide(val):
@@ -294,7 +337,7 @@ def main():
 
     for curr_event in task["events"]:
         logging.info('Current event: {}'.format(curr_event['name']))
-        new_df = extract_specific(df, curr_event, new_df, TTL)
+        new_df = extract_event(df, curr_event, new_df, TTL)
 
     # Sort new_df by onset
     new_df = new_df.sort_values('onset')
