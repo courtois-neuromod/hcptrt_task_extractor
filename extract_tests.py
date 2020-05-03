@@ -298,7 +298,7 @@ def main():
 
     # Sort new_df by onset
     new_df = new_df.sort_values('onset')
-    print(new_df)
+    logging.info(new_df)
     # Extract new_df into tsv file
     new_df.to_csv(out_file, index=False, sep='\t')
 
