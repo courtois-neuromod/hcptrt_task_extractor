@@ -5,7 +5,7 @@ pip install -r requirements.txt
 # EXTRACT HCPTRT TASK
 
 ```
-usage: extract_tests.py [-h] [-v] in_file in_task out_file
+usage: extract_hcptrt.py [-h] [-v] in_file in_task out_file
 
     Convert txt data from eprime to tsv using convert_eprime.
     git@github.com:tsalo/convert-eprime.git
