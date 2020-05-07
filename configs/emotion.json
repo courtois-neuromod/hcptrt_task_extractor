@@ -2,16 +2,14 @@
   "TTL": "SyncSlide.OnsetTime",
   "events":[
     {
-      "name": "new_bloc",
-      "ioi": [
-        {
+      "name": "new_bloc_shape",
+      "ioi": {
         "column": "Procedure",
-        "value": ["ShapePromptPROC","FacePromptPROC"]}
-      ],
+        "value": "ShapePromptPROC"
+      },
       "onset": {
-        "column": ["shape.OnsetTime", "face.OnsetTime"],
-        "type": "time",
-        "value": "merge"
+        "column": "shape.OnsetTime",
+        "type": "time"
       },
       "duration": {
         "column": "StimSlide.OnsetTime",
@@ -24,12 +22,30 @@
       }
     },
     {
-      "name": "response",
-      "ioi": [
-        {
+      "name": "new_bloc_face",
+      "ioi": {
         "column": "Procedure",
-        "value": "TrialsPROC"
-        }],
+        "value": "FacePromptPROC"
+      },
+      "onset": {
+        "column": "face.OnsetTime",
+        "type": "time"
+      },
+      "duration": {
+        "column": "StimSlide.OnsetTime",
+        "type": "rt",
+        "formula": [-1, "subtract", "onset"]
+      },
+      "nbloc": {
+        "column": "HRun1",
+        "type": "int"
+      }
+    },
+    {
+      "name": "response_shape",
+      "ioi": {
+        "column": ["ShapeBlock1", "ShapeBlock2", "ShapeBlock3"]
+      },
       "onset": {
         "column": "StimSlide.OnsetTime",
         "type": "time"
@@ -43,9 +59,8 @@
         "type": "int"
       },
       "ntrial": {
-        "column": ["ShapeBlock1", "ShapeBlock2", "ShapeBlock3", "FaceBlock1", "FaceBlock2", "FaceBlock3"],
-        "type": "int",
-        "value": "merge"
+        "column": ["ShapeBlock1", "ShapeBlock2", "ShapeBlock3"],
+        "type": "int"
       },
       "stim_top": {
         "column": "Top",
@@ -61,11 +76,44 @@
       }
     },
     {
-      "name": "fixation",
-      "ioi": [{
-        "column": "Fixation.OnsetTime",
-        "value": "notNAN"
-      }],
+      "name": "response_face",
+      "ioi": {
+        "column": ["FaceBlock1", "FaceBlock2", "FaceBlock3"]
+      },
+      "onset": {
+        "column": "StimSlide.OnsetTime",
+        "type": "time"
+      },
+      "duration": {
+        "column": "StimSlide.RT",
+        "type": "rt"
+      },
+      "nbloc": {
+        "column": "HRun1",
+        "type": "int"
+      },
+      "ntrial": {
+        "column": ["FaceBlock1", "FaceBlock2", "FaceBlock3"],
+        "type": "int"
+      },
+      "stim_top": {
+        "column": "Top",
+        "type": "stim"
+      },
+      "stim_left": {
+        "column": "Left",
+        "type": "stim"
+      },
+      "stim_right": {
+        "column": "Right",
+        "type": "stim"
+      }
+    },
+    {
+      "name": "cross_fixation",
+      "ioi": {
+        "column": "Fixation.OnsetTime"
+      },
       "onset": {
         "column": "Fixation.OnsetTime",
         "type": "time"
@@ -73,7 +121,8 @@
       "duration":{
         "column": "StimSlide.OnsetTime",
         "type": "rt",
-        "formula": [-1, "subtract", "onset"]
+        "formula": [-1, "subtract", "onset"],
+        "when_no_value": "median"
       },
       "nbloc": {
         "column": "HRun1",
