@@ -23,7 +23,7 @@ column = "column"
 value = "value"
 formula = "formula"
 when_no_value = "when_no_value"
-
+type = "type"
 
 def _build_args_parser():
     p = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
@@ -331,9 +331,10 @@ def get_key(df, columnName, key_dict):
 
     if isinstance(key_dict[column], str):
         key_serie = df[key_dict[column]]
-        if key_dict['type'] == 'stim':
-            key_serie = '../../stimulis/' + key_serie
-        elif columnName == "nbloc":
+        if type in key_dict:
+            if key_dict[type] == 'stim':
+                key_serie = '../../stimulis/' + key_serie
+        if columnName == "nbloc":
             key_serie = key_serie.astype(np.float) - \
                             np.floor(key_serie.astype(np.float)/2)
     elif isinstance(key_dict[column], list):
