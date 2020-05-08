@@ -159,15 +159,9 @@ def get_onsets(df, onset_dict):
         Series of Index with onsets.
     """
 
-    if value in onset_dict:
-        if onset_dict[value] == 'merge' and isinstance(onset_dict[column],
-                                                       list):
-            onset_serie = merge_columns(df, onset_dict)
-        elif isinstance(onset_dict[column], list):
-            logging.error('Use case {} not coded'.format(onset_dict[value]))
-        else:
-            logging.error('If you want to merge you need at least two columns')
-    else:
+    if isinstance(onset_dict[column], list):
+        onset_serie = merge_columns(df, onset_dict)
+    elif isinstance(onset_dict[column], str):
         onset_serie = df[onset_dict[column]]
 
     onset_serie = onset_serie.rename('onset')
@@ -205,6 +199,8 @@ def get_durations(df, onset, duration_dict):
             logging.error('get_duration - Formula is not coded yet')
     elif isinstance(duration_dict[column], str):
         duration_serie = df[duration_dict[column]]
+    elif isinstance(duration_dict[column], list):
+        duration_serie = merge_columns(df, duration_dict)
 
     if when_no_value in duration_dict:
         if duration_dict[when_no_value] == 'median':
@@ -334,9 +330,10 @@ def get_key(df, columnName, key_dict):
         if type in key_dict:
             if key_dict[type] == 'stim':
                 key_serie = '../../stimulis/' + key_serie
-        if columnName == "nbloc":
-            key_serie = key_serie.astype(np.float) - \
-                            np.floor(key_serie.astype(np.float)/2)
+        if formula in key_dict:
+            if key_dict[formula] == "nbloc":
+                key_serie = key_serie.astype(np.float) - \
+                                np.floor(key_serie.astype(np.float)/2)
     elif isinstance(key_dict[column], list):
         key_serie = merge_columns(df, key_dict)
     else:

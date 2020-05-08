@@ -2,7 +2,7 @@
   "TTL": "SyncSlide.OnsetTime",
   "events":[
     {
-      "name": "reponse",
+      "name": "response",
       "ioi": {
         "column": "Procedure",
         "value": "TrialsPROC"
