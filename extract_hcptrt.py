@@ -25,28 +25,56 @@ formula = "formula"
 when_no_value = "when_no_value"
 type = "type"
 
+
 def _build_args_parser():
     p = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
                                 description=__doc__)
 
     p.add_argument('in_file',
-                   help='BIDS folder to convert.')
+                   help='Task output (.txt) to convert.')
     p.add_argument('in_task',
-                   help='task you want to convert (wm, emotion, gambling...).')
+                   help='Config JSON file defining the task you want to '
+                        'convert.')
     p.add_argument('out_file',
                    help='output tsv file.')
+    p.add_argument('--extract_eprime', action='store_true',
+                   help='Extract eprime file into raw tsv file. \n'
+                        'It helps to create a config file.')
+    p.add_argument('-f', dest='overwrite', action='store_true',
+                   help='Force overwriting of the output files.')
     p.add_argument('-v', action='store_true', dest='verbose',
                    help='If set, produces verbose output.')
     return p
 
 
-def assert_task_exists(parser, in_task):
-    fullpath = os.path.join('configs', in_task + '.json')
+def assert_task_exists(in_task):
+    """
+    Assert if in_task exist and return dict (config file).
+
+    Parameters
+    -------
+    in_task : str
+        Path to json config file.
+
+    Returns
+    -------
+    task: Dict
+        Dictionnary of
+    """
+
+    in_task_filename, in_task_extension = os.path.splitext(os.path.basename(in_task))
+
+    if in_task_extension == ".json":
+        fullpath = in_task
+    else:
+        raise IOError('Task has to be a json file or choose one from config'
+                      ' folder.')
+
     if os.path.exists(fullpath):
         with open(fullpath, 'r') as json_file:
             task = json.load(json_file)
     else:
-        parser.error('{} does not exist'.format(in_task))
+        raise IOError('{} does not exist'.format(in_task))
 
     return task
 
@@ -54,7 +82,8 @@ def assert_task_exists(parser, in_task):
 def assert_task_df(df_columns, json_dict):
     """
     Assert if json_dict is using column name that exists in df_columns.
-    Does not look into ioi
+    Does not look into ioi dict.
+
     Parameters
     ----------
     df_columns : int
@@ -89,7 +118,8 @@ def assert_task_df(df_columns, json_dict):
 
     for curr_column in allColumns:
         if not set([curr_column]).issubset(df_columns):
-            raise IOError("Column: \"{}\" does not exist into df".format(curr_column))
+            raise IOError("Column: \"{}\" does not exist "
+                          "into df".format(curr_column))
 
 
 def get_ioi(df, ioi_dict):
@@ -117,9 +147,9 @@ def get_ioi(df, ioi_dict):
             if ioi_dict[formula] == "intersection":
                 indexes = intersection_columns(df, ioi_dict)
             else:
-                logging.error("function: get_ioi - If you have multiple columns you"
-                              "need a formula to know what should be "
-                              "done. Default merge")
+                logging.error("function: get_ioi - If you have multiple "
+                              "columns you need a formula to know what "
+                              "should be done. Default merge")
         else:
             ioi_serie = merge_columns(df, ioi_dict)
             indexes = ~np.isnan(ioi_serie.astype(np.float))
@@ -141,34 +171,6 @@ def get_ioi(df, ioi_dict):
     return indexes
 
 
-def get_onsets(df, onset_dict):
-    """
-    Get onsets from event dict.
-
-    Parameters
-    ----------
-    df : pandas DataFrame
-        current DataFrame
-
-    onset_dict : dict
-        Dict to select rows of interest for onset.
-
-    Returns
-    -------
-    onset_serie: pandas.core.series.Series
-        Series of Index with onsets.
-    """
-
-    if isinstance(onset_dict[column], list):
-        onset_serie = merge_columns(df, onset_dict)
-    elif isinstance(onset_dict[column], str):
-        onset_serie = df[onset_dict[column]]
-
-    onset_serie = onset_serie.rename('onset')
-
-    return onset_serie
-
-
 def get_durations(df, onset, duration_dict):
     """
     Get durations from event dict.
@@ -186,27 +188,30 @@ def get_durations(df, onset, duration_dict):
     duration_serie: pandas.core.series.Series
         Series of Index with durations.
     """
-    if formula in duration_dict:
-        curr_formula = duration_dict[formula]
-        if len(curr_formula) == 3:
-            duration_serie = df[duration_dict[column]]
-            duration_serie = duration_serie.shift(periods=curr_formula[0])
-            if curr_formula[1] == 'subtract':
-                duration_serie = duration_serie.astype(np.float) - onset.astype(np.float)
-            elif curr_formula[1] == 'add':
-                duration_serie = duration_serie.astype(np.float) + onset.astype(np.float)
-        else:
-            logging.error('get_duration - Formula is not coded yet')
+
+    if isinstance(duration_dict[column], list):
+        duration_serie = merge_columns(df, duration_dict)
     elif isinstance(duration_dict[column], str):
         duration_serie = df[duration_dict[column]]
-    elif isinstance(duration_dict[column], list):
-        duration_serie = merge_columns(df, duration_dict)
+        if formula in duration_dict:
+            curr_formula = duration_dict[formula]
+            if len(curr_formula) == 3:
+                duration_serie = duration_serie.shift(periods=curr_formula[0])
+
+            if curr_formula[1] == 'subtract':
+                duration_serie = duration_serie.astype(np.float) - \
+                                    onset.astype(np.float)
+            elif curr_formula[1] == 'add':
+                duration_serie = duration_serie.astype(np.float) + \
+                                    onset.astype(np.float)
 
     if when_no_value in duration_dict:
         if duration_dict[when_no_value] == 'median':
-            duration_serie[np.isnan(duration_serie.astype(np.float))] = np.nanmedian(duration_serie.astype(np.float))
+            duration_serie[np.isnan(duration_serie.astype(np.float))] = \
+                np.nanmedian(duration_serie.astype(np.float))
         elif duration_dict[when_no_value] == 'mean':
-            duration_serie[np.isnan(duration_serie.astype(np.float))] = np.nanmean(duration_serie.astype(np.float))
+            duration_serie[np.isnan(duration_serie.astype(np.float))] = \
+                np.nanmean(duration_serie.astype(np.float))
 
     duration_serie = duration_serie.rename('duration')
     return duration_serie
@@ -327,17 +332,26 @@ def get_key(df, columnName, key_dict):
 
     if isinstance(key_dict[column], str):
         key_serie = df[key_dict[column]]
-        if type in key_dict:
-            if key_dict[type] == 'stim':
-                key_serie = '../../stimulis/' + key_serie
-        if formula in key_dict:
-            if key_dict[formula] == "nbloc":
-                key_serie = key_serie.astype(np.float) - \
-                                np.floor(key_serie.astype(np.float)/2)
     elif isinstance(key_dict[column], list):
         key_serie = merge_columns(df, key_dict)
     else:
         logging.error('not coded yet - get_key')
+
+    if type in key_dict:
+        if key_dict[type] == 'stim':
+            key_serie = '../../stimulis/' + key_serie
+
+        if key_dict[type] == "bloc":
+            key_serie = key_serie.astype(np.float) - \
+                            np.floor(key_serie.astype(np.float)/2)
+
+    if when_no_value in key_serie:
+        if key_serie[when_no_value] == 'median':
+            key_serie[np.isnan(key_serie.astype(np.float))] = \
+                np.nanmedian(key_serie.astype(np.float))
+        elif key_serie[when_no_value] == 'mean':
+            key_serie[np.isnan(key_serie.astype(np.float))] = \
+                np.nanmean(key_serie.astype(np.float))
 
     key_serie = key_serie.rename(columnName)
 
@@ -350,7 +364,7 @@ def extract_event(df, curr_event, new_df, ttl):
     ioi = get_ioi(df, curr_event['ioi'])
 
     # Get onsets and durations
-    onsets = get_onsets(df, curr_event['onset'])
+    onsets = get_key(df, 'onset', curr_event['onset'])
     durations = get_durations(df, onsets, curr_event['duration'])
 
     # Creation of the event dataframe
@@ -410,11 +424,19 @@ def main():
     in_task = args.in_task
     out_file = args.out_file
 
+    if os.path.exists(out_file):
+        if not args.overwrite:
+            raise IOError('Output file: {} already exists'.format(out_file))
+
     # Get json file from task name
-    task = assert_task_exists(parser, in_task)
+    task = assert_task_exists(in_task)
 
     #  Convert eprime txt file to data frame
     df = _text_to_df(in_file)
+
+    if args.extract_eprime:
+        df.to_csv(out_file, index=False, sep='\t')
+        return
 
     # Assert all columns in task exist in df
     assert_task_df(df.columns, task)

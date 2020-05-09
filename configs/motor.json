@@ -8,8 +8,7 @@
         "value": "LeftHandCueProcedure"
       },
       "onset": {
-        "column": "LeftHandCue.OnsetTime",
-        "type": "time"
+        "column": "LeftHandCue.OnsetTime"
       },
       "duration": {
         "column": "CrossLeft.OnsetTime",
@@ -18,7 +17,7 @@
       },
       "nbloc": {
         "column": "MotorRun1List",
-        "type": "int"
+        "type": "bloc"
       }
     },
     {
@@ -28,17 +27,15 @@
         "value": "RightHandCuePROC"
       },
       "onset": {
-        "column": "RightHandCue.OnsetTime",
-        "type": "time"
+        "column": "RightHandCue.OnsetTime"
       },
       "duration": {
         "column": "CrossRight.OnsetTime",
-        "type": "rt",
         "formula": [-1, "subtract", "onset"]
       },
       "nbloc": {
         "column": "MotorRun1List",
-        "type": "int"
+        "type": "bloc"
       }
     },
     {
@@ -58,7 +55,7 @@
       },
       "nbloc": {
         "column": "MotorRun1List",
-        "type": "int"
+        "type": "bloc"
       }
     },
     {
@@ -68,17 +65,15 @@
         "value": "LeftFootCuePROC"
       },
       "onset": {
-        "column": "LeftFootCue.OnsetTime",
-        "type": "time"
+        "column": "LeftFootCue.OnsetTime"
       },
       "duration": {
         "column": "CrossLeft.OnsetTime",
-        "type": "rt",
         "formula": [-1, "subtract", "onset"]
       },
       "nbloc": {
         "column": "MotorRun1List",
-        "type": "int"
+        "type": "bloc"
       }
     },
     {
@@ -88,17 +83,14 @@
         "value": "TongueCuePROC"
       },
       "onset": {
-        "column": "TongueCue.OnsetTime",
-        "type": "time"
+        "column": "TongueCue.OnsetTime"
       },
       "duration": {
         "column": "CrossCenter.OnsetTime",
-        "type": "rt",
         "formula": [-1, "subtract", "onset"]
       },
       "nbloc": {
-        "column": "MotorRun1List",
-        "type": "int"
+        "column": "MotorRun1List"
       }
     },
     {
@@ -109,20 +101,16 @@
         "formula": "intersection"
       },
       "onset": {
-        "column": "CrossLeft.OnsetTime",
-        "type": "time"
+        "column": "CrossLeft.OnsetTime"
       },
       "duration": {
-        "column": "CrossLeft.OnsetToOnsetTime",
-        "type": "rt"
+        "column": "CrossLeft.OnsetToOnsetTime"
       },
       "nbloc": {
-        "column": "MotorRun1List",
-        "type": "int"
+        "column": "MotorRun1List"
       },
       "trial":{
-        "column": "MotorRun1List.Sample",
-        "type": "int"
+        "column": "MotorRun1List.Sample"
       }
     },
     {
@@ -133,20 +121,16 @@
           "formula": "intersection"
         },
         "onset": {
-          "column": "CrossRight.OnsetTime",
-          "type": "time"
+          "column": "CrossRight.OnsetTime"
         },
         "duration": {
-          "column": "CrossRight.OnsetToOnsetTime",
-          "type": "rt"
+          "column": "CrossRight.OnsetToOnsetTime"
         },
         "nbloc": {
-          "column": "MotorRun1List",
-          "type": "int"
+          "column": "MotorRun1List"
         },
         "trial":{
-          "column": "MotorRun1List.Sample",
-          "type": "int"
+          "column": "MotorRun1List.Sample"
         }
     },
     {
@@ -157,69 +141,60 @@
         "formula": "intersection"
       },
       "onset": {
-        "column": "CrossLeft.OnsetTime",
-        "type": "time"
+        "column": "CrossLeft.OnsetTime"
       },
       "duration": {
-        "column": "CrossLeft.OnsetToOnsetTime",
-        "type": "rt"
+        "column": "CrossLeft.OnsetToOnsetTime"
       },
       "nbloc": {
         "column": "MotorRun1List",
-        "type": "int"
+        "type": "bloc"
       },
       "trial":{
-        "column": "MotorRun1List.Sample",
-        "type": "int"
+        "column": "MotorRun1List.Sample"
       }
     },
     {
-        "name": "response_right_foot",
-        "ioi": {
-          "column": ["Procedure", "BlockType"],
-          "value": ["CrossRightPROC", "Right Foot"],
-          "formula": "intersection"
-        },
-        "onset": {
-          "column": "CrossRight.OnsetTime",
-          "type": "time"
-        },
-        "duration": {
-          "column": "CrossRight.OnsetToOnsetTime",
-          "type": "rt"
-        },
-        "nbloc": {
-          "column": "MotorRun1List",
-          "type": "int"
-        },
-        "trial":{
-          "column": "MotorRun1List.Sample",
-          "type": "int"
-        }
+      "name": "response_right_foot",
+      "ioi": {
+        "column": ["Procedure", "BlockType"],
+        "value": ["CrossRightPROC", "Right Foot"],
+        "formula": "intersection"
+      },
+      "onset": {
+        "column": "CrossRight.OnsetTime"
+      },
+      "duration": {
+        "column": "CrossRight.OnsetToOnsetTime"
+      },
+      "nbloc": {
+        "column": "MotorRun1List",
+        "type": "bloc"
+      },
+      "trial":{
+        "column": "MotorRun1List.Sample"
+      }
     },
     {
-        "name": "response_tongue",
-        "ioi": {
-          "column": ["Procedure", "BlockType"],
-          "value": ["CrossCenterPROC", "Tongue"],
-          "formula": "intersection"
-        },
-        "onset": {
-          "column": "CrossCenter.OnsetTime",
-          "type": "time"
-        },
-        "duration": {
-          "column": "CrossCenter.OnsetToOnsetTime",
-          "type": "rt"
-        },
-        "nbloc": {
-          "column": "MotorRun1List",
-          "type": "int"
-        },
-        "trial":{
-          "column": "MotorRun1List.Sample",
-          "type": "int"
-        }
+      "name": "response_tongue",
+      "ioi": {
+        "column": ["Procedure", "BlockType"],
+        "value": ["CrossCenterPROC", "Tongue"],
+        "formula": "intersection"
+      },
+      "onset": {
+        "column": "CrossCenter.OnsetTime"
+      },
+      "duration": {
+        "column": "CrossCenter.OnsetToOnsetTime"
+      },
+      "nbloc": {
+        "column": "MotorRun1List",
+        "type": "bloc"
+      },
+      "trial":{
+        "column": "MotorRun1List.Sample"
       }
+    }
   ]
 }

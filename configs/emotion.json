@@ -8,17 +8,15 @@
         "value": "ShapePromptPROC"
       },
       "onset": {
-        "column": "shape.OnsetTime",
-        "type": "time"
+        "column": "shape.OnsetTime"
       },
       "duration": {
         "column": "StimSlide.OnsetTime",
-        "type": "rt",
         "formula": [-1, "subtract", "onset"]
       },
       "nbloc": {
         "column": "HRun1",
-        "type": "int"
+        "type": "bloc"
       }
     },
     {
@@ -28,17 +26,15 @@
         "value": "FacePromptPROC"
       },
       "onset": {
-        "column": "face.OnsetTime",
-        "type": "time"
+        "column": "face.OnsetTime"
       },
       "duration": {
         "column": "StimSlide.OnsetTime",
-        "type": "rt",
         "formula": [-1, "subtract", "onset"]
       },
       "nbloc": {
         "column": "HRun1",
-        "type": "int"
+        "type": "bloc"
       }
     },
     {
@@ -47,20 +43,17 @@
         "column": ["ShapeBlock1", "ShapeBlock2", "ShapeBlock3"]
       },
       "onset": {
-        "column": "StimSlide.OnsetTime",
-        "type": "time"
+        "column": "StimSlide.OnsetTime"
       },
       "duration": {
-        "column": "StimSlide.RT",
-        "type": "rt"
+        "column": "StimSlide.RT"
       },
       "nbloc": {
         "column": "HRun1",
-        "type": "int"
+        "type": "bloc"
       },
       "ntrial": {
-        "column": ["ShapeBlock1", "ShapeBlock2", "ShapeBlock3"],
-        "type": "int"
+        "column": ["ShapeBlock1", "ShapeBlock2", "ShapeBlock3"]
       },
       "stim_top": {
         "column": "Top",
@@ -81,20 +74,17 @@
         "column": ["FaceBlock1", "FaceBlock2", "FaceBlock3"]
       },
       "onset": {
-        "column": "StimSlide.OnsetTime",
-        "type": "time"
+        "column": "StimSlide.OnsetTime"
       },
       "duration": {
-        "column": "StimSlide.RT",
-        "type": "rt"
+        "column": "StimSlide.RT"
       },
       "nbloc": {
         "column": "HRun1",
-        "type": "int"
+        "type": "bloc"
       },
       "ntrial": {
-        "column": ["FaceBlock1", "FaceBlock2", "FaceBlock3"],
-        "type": "int"
+        "column": ["FaceBlock1", "FaceBlock2", "FaceBlock3"]
       },
       "stim_top": {
         "column": "Top",
@@ -115,18 +105,16 @@
         "column": "Fixation.OnsetTime"
       },
       "onset": {
-        "column": "Fixation.OnsetTime",
-        "type": "time"
+        "column": "Fixation.OnsetTime"
       },
       "duration":{
         "column": "StimSlide.OnsetTime",
-        "type": "rt",
         "formula": [-1, "subtract", "onset"],
         "when_no_value": "median"
       },
       "nbloc": {
         "column": "HRun1",
-        "type": "int"
+        "type": "bloc"
       }
     }
   ]
